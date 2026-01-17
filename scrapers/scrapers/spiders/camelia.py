@@ -7,11 +7,12 @@ class CameliaSpider(scrapy.Spider):
     start_urls = ["https://camelia.lt/akcijos"]
 
     def parse(self, response):
-        goods = response.css("div.product-list")
-        for good in goods:
+        products = response.css('div[data-test^="product-list-item"]')
+
+        for product in products:
             yield {
-                'name': good.css('div.product-name::text').get(),
-                'price': good.css('div.price::text').get(),
+                'name': product.css('div.product-name::text').get(),
+                'price': product.css('div.price::text').get(),
             }
 
 
