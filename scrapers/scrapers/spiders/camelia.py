@@ -8,12 +8,14 @@ class CameliaSpider(scrapy.Spider):
 
     def parse(self, response):
         products = response.css('div[data-test^="product-list-item"]')
-
         for product in products:
+            relative_url = product.css('a[data-test^="product-card-link"]::attr(href)').get()
+            full_url = respones.urljoin(relative_url)
+
             yield {
-                'name': product.css('div.product-name::text').get(),
-                'price': product.css('div.price::text').get(),
-            }
+                'url': full_url,
+                'name': product.css('div.product-name::text').get().strip(),
+                'price': product.css('div.price::text').get(),}
 
         current_page = response.meta.get("page", 1)
         next_page = current_page + 1
@@ -23,7 +25,25 @@ class CameliaSpider(scrapy.Spider):
             yield response.follow(
                 next_url,
                 callback=self.parse,
-                meta={"page": next_page}
+                meta={"page": next_page},
             )
+
+
+    def parse_product_page(self, response):
+        product = response.css("div.product-grid")
+
+        yield {
+            'name': product.css('div[data-test^="product-name"]::text').get(),
+            'product_code':  product.css('div[data-test^="product-code"]::text').get(),
+            ''
+
+
+
+        }
+
+
+
+
+
 
 
