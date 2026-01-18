@@ -6,6 +6,29 @@ class CameliaSpider(scrapy.Spider):
     allowed_domains = ["camelia.lt"]
     start_urls = ["https://camelia.lt/akcijos"]
 
+    #Current price with discount or without discount if there are conditions
+    base_price = product.css('div[data-test="product-price"] div[data-test="product-price-formatted"]::text').get()
+
+    #Price before discount (no conditions)
+    old_price = product.css('span[data-test^="product-price-original-item"]::text').get()
+
+    #Price with discount if conditions are applied
+    conditional_discount_price = product.css('span.discounted-price-value::text').get()
+
+    #Conditions of the discount
+    discount_condition = product.css('div.badge-content div::text').getall()
+    discount_condition = " ".join(t.strip() for t in discount_condition if t.strip())
+
+    if conditional_discount_price:
+        discount_price = conditional_discount_price
+        discount_type = "conditional"
+    elif old_price:
+        discount_price = base_price
+        discount_type = "direct"
+    else:
+        discount_price = None
+        discount_type = None
+
     def parse(self, response):
         products = response.css('div[data-test^="product-list-item"]')
         for product in products:
@@ -36,10 +59,14 @@ class CameliaSpider(scrapy.Spider):
             'name': product.css('div[data-test^="product-name"]::text').get(),
             'product_code':  product.css('div[data-test^="product-code"]::text').get(),
             ''
-
-
-
         }
+
+
+
+
+
+
+
 
 
 
