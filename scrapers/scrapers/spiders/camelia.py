@@ -6,28 +6,17 @@ class CameliaSpider(scrapy.Spider):
     allowed_domains = ["camelia.lt"]
     start_urls = ["https://camelia.lt/akcijos"]
 
-
-
-    if conditional_discount_price:
-        discount_price = conditional_discount_price
-        discount_type = "conditional"
-    elif old_price:
-        discount_price = base_price
-        discount_type = "direct"
-    else:
-        discount_price = None
-        discount_type = None
-
     def parse(self, response):
         products = response.css('div[data-test^="product-list-item"]')
         for product in products:
             relative_url = product.css('a[data-test^="product-card-link"]::attr(href)').get()
-            full_url = respones.urljoin(relative_url)
+            full_url = response.urljoin(relative_url)
+            yield scrapy.Request(full_url, callback=self.parse_product_page)
 
-            yield {
-                'url': full_url,
-                'name': product.css('div.product-name::text').get().strip(),
-                'price': product.css('div.price::text').get(),}
+            #yield {
+            #    'url': full_url,
+            #    'name': product.css('div.product-name::text').get().strip(),
+            #    'price': product.css('div.price::text').get(),}
 
         current_page = response.meta.get("page", 1)
         next_page = current_page + 1
@@ -44,29 +33,53 @@ class CameliaSpider(scrapy.Spider):
         product = response.css("div.product-grid")
 
         # Current price with discount or without discount if there are conditions
-        base_price = product.css('div[data-test="product-price"] div[data-test="product-price-formatted"]::text').get()
+        base_price = product.css(
+            'div[data-test="product-price"] div[data-test="product-price-formatted"]::text'
+        ).get()
 
         # Price before discount (no conditions)
-        old_price = product.css('span[data-test^="product-price-original-item"]::text').get()
+        old_price = product.css(
+            'span[data-test^="product-price-original-item"]::text'
+        ).get()
 
         # Price with discount if conditions are applied
-        conditional_discount_price = product.css('span.discounted-price-value::text').get()
+        conditional_discount_price = product.css(
+            'span.discounted-price-value::text'
+        ).get()
 
         # Conditions of the discount
-        discount_condition = product.css('div.badge-content div::text').getall()
-        discount_condition = " ".join(t.strip() for t in discount_condition if t.strip())
+        discount_condition_raw = product.css(
+            'div.badge-content div::text'
+        ).getall()
 
-        company_name = product.css('a[href^="/a/prekes-zenklas/"]::text').get()
+        discount_condition = " ".join(
+            t.strip() for t in discount_condition_raw if t.strip()
+        )
+
+        if conditional_discount_price:
+            final_price = conditional_discount_price
+            discount_type = "conditional"
+        elif old_price:
+            final_price = base_price
+            discount_type = "direct"
+        else:
+            final_price = base_price
+            discount_type = None
+
 
         yield {
-            'name': product.css('div[data-test^="product-name"]::text').get(),
-            'product_code':  product.css('div[data-test^="product-code"]::text').get(),
-
+        "url": response.url,
+        "name": product.css('h1[data-test="product-name"]::text').get(),
+        "company_name": product.css('a[href^="/a/prekes-zenklas/"]::text').get(),
+        "category": product.css('div.product-additional-info a::text').get(),
+        "product_code": product.css('div[data-test^="product-code"]::text').get(),
+        "base_price": base_price,
+        "old_price": old_price,
+        "conditional_discount_price": conditional_discount_price,
+        "final_price": final_price,
+        "discount_type": discount_type,
+        "discount_condition": discount_condition,
         }
-
-        category = product.css('div.product-additional-info a::text').get()
-
-
 
 
 
