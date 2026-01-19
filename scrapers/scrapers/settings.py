@@ -12,6 +12,7 @@ BOT_NAME = "scrapers"
 SPIDER_MODULES = ["scrapers.spiders"]
 NEWSPIDER_MODULE = "scrapers.spiders"
 
+
 ADDONS = {}
 
 

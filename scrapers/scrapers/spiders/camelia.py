@@ -7,6 +7,17 @@ class CameliaSpider(scrapy.Spider):
     allowed_domains = ["camelia.lt"]
     start_urls = ["https://camelia.lt/akcijos"]
 
+
+    custom_settings = {
+        'FEEDS': {
+            'camelia_data.json': {
+                'format': 'json',
+                'overwrite': True,
+                'encoding': 'utf-8'
+            }
+        }
+    }
+
     def parse(self, response):
         products = response.css('div[data-test^="product-list-item"]')
         for product in products:
