@@ -85,19 +85,6 @@ class CameliaSpider(scrapy.Spider):
         yield product_item
 
 
-       # yield {
-       # "url": response.url,
-       # "title": product.css('h1[data-test="product-name"]::text').get(),
-       # "company_name": product.css('a[href^="/a/prekes-zenklas/"]::text').get(),
-       # "category": product.css('div.product-additional-info a::text').get(),
-       # "product_code": product.css('div[data-test^="product-code"]::text').get(),
-       # "base_price": base_price,
-       # "old_price": old_price,
-       # "conditional_discount_price": conditional_discount_price,
-       # "final_price": final_price,
-       # "discount_type": discount_type,
-       # "discount_condition": discount_condition,
-       # }
 
 
 
