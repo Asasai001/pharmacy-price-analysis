@@ -55,7 +55,6 @@ class SaveToMySQLPipeline:
             port=os.getenv("DB_PORT"),
         )
 
-        ## Create cursor, used to execute commands
         self.cur = self.conn.cursor()
 
         self.cur.execute("""
@@ -66,13 +65,55 @@ class SaveToMySQLPipeline:
         company_name VARCHAR(60),
         category VARCHAR(80),
         product_code VARCHAR(30),
-        base_price DECIMAL,
-        old_price DECIMAL,
-        conditional_discount_price DECIMAL,
-        final_price DECIMAL,
+        base_price DECIMAL(10,2),
+        old_price DECIMAL(10,2),
+        conditional_discount_price DECIMAL(10,2),
+        final_price DECIMAL(10,2),
         discount_type VARCHAR(30),
         discount_condition VARCHAR(255),
-        source VARCHAR(40)
+        source VARCHAR(40),
+        PRIMARY KEY (id)
         )
         """)
+
+    def process_item(self, item, spider):
+        self.cur.execute(
+            """
+            INSERT INTO pharmacy_prices (
+                url,
+                title,
+                company_name,
+                category,
+                product_code,
+                base_price,
+                old_price,
+                conditional_discount_price,
+                final_price,
+                discount_type,
+                discount_condition,
+                source
+            )
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            """,
+            (
+                item.get("url"),
+                item.get("title"),
+                item.get("company_name"),
+                item.get("category"),
+                item.get("product_code"),
+                item.get("base_price"),
+                item.get("old_price"),
+                item.get("conditional_discount_price"),
+                item.get("final_price"),
+                item.get("discount_type"),
+                item.get("discount_condition"),
+                item.get("source"),
+            )
+        )
+        self.conn.commit()
+        return item
+
+    def close_spider(self, spider):
+        self.cur.close()
+        self.conn.close()
 
