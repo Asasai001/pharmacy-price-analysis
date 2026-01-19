@@ -20,6 +20,14 @@ class ScrapersPipeline:
             value = value.replace('\xa0€', '')
             adapter[field_name] = value
 
+        codes = ['product_code']
+        for code in codes:
+          value = adapter.get(code)
+          if value is not None:
+            value = value.replace('prekės kodas:', '')
+            value = value.strip()
+            adapter[code] = value
+
         price_keys = ['base_price', 'old_price', 'conditional_discount_price', 'final_price']
         for price_key in price_keys:
           value = adapter.get(price_key)
