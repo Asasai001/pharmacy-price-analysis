@@ -1,4 +1,5 @@
 import scrapy
+from scrapers.items import ProductItem
 
 
 class CameliaSpider(scrapy.Spider):
@@ -66,20 +67,37 @@ class CameliaSpider(scrapy.Spider):
             final_price = base_price
             discount_type = None
 
+        product_item = ProductItem()
 
-        yield {
-        "url": response.url,
-        "name": product.css('h1[data-test="product-name"]::text').get(),
-        "company_name": product.css('a[href^="/a/prekes-zenklas/"]::text').get(),
-        "category": product.css('div.product-additional-info a::text').get(),
-        "product_code": product.css('div[data-test^="product-code"]::text').get(),
-        "base_price": base_price,
-        "old_price": old_price,
-        "conditional_discount_price": conditional_discount_price,
-        "final_price": final_price,
-        "discount_type": discount_type,
-        "discount_condition": discount_condition,
-        }
+        product_item["url"] = response.url
+        product_item["title"] = product.css('h1[data-test="product-name"]::text').get()
+        product_item["company_name"] = product.css('a[href^="/a/prekes-zenklas/"]::text').get()
+        product_item["category"] = product.css('div.product-additional-info a::text').get()
+        product_item["product_code"] = product.css('div[data-test^="product-code"]::text').get()
+        product_item["base_price"] = base_price
+        product_item["old_price"] = old_price
+        product_item["conditional_discount_price"] = conditional_discount_price
+        product_item["final_price"] = final_price
+        product_item["discount_type"] = discount_type
+        product_item["discount_condition"] = discount_condition
+        product_item["source"] = "camelia"
+
+        yield product_item
+
+
+       # yield {
+       # "url": response.url,
+       # "title": product.css('h1[data-test="product-name"]::text').get(),
+       # "company_name": product.css('a[href^="/a/prekes-zenklas/"]::text').get(),
+       # "category": product.css('div.product-additional-info a::text').get(),
+       # "product_code": product.css('div[data-test^="product-code"]::text').get(),
+       # "base_price": base_price,
+       # "old_price": old_price,
+       # "conditional_discount_price": conditional_discount_price,
+       # "final_price": final_price,
+       # "discount_type": discount_type,
+       # "discount_condition": discount_condition,
+       # }
 
 
 

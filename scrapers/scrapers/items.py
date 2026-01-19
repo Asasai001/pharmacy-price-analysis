@@ -10,3 +10,18 @@ class ScrapersItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     pass
+
+
+class ProductItem(scrapy.Item):
+   url = scrapy.Field()
+   title = scrapy.Field()
+   company_name = scrapy.Field()
+   category = scrapy.Field()
+   product_code = scrapy.Field()
+   base_price = scrapy.Field()
+   old_price = scrapy.Field()
+   conditional_discount_price = scrapy.Field()
+   final_price = scrapy.Field()
+   discount_type = scrapy.Field()
+   discount_condition = scrapy.Field()
+   source = scrapy.Field()
