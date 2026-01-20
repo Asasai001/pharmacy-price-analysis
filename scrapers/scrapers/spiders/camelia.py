@@ -25,10 +25,6 @@ class CameliaSpider(scrapy.Spider):
             full_url = response.urljoin(relative_url)
             yield scrapy.Request(full_url, callback=self.parse_product_page)
 
-            #yield {
-            #    'url': full_url,
-            #    'name': product.css('div.product-name::text').get().strip(),
-            #    'price': product.css('div.price::text').get(),}
 
         current_page = response.meta.get("page", 1)
         next_page = current_page + 1
