@@ -25,3 +25,11 @@ class GintarineSpider(scrapy.Spider):
                 meta={"page": next_page},
             )
 
+#product = response.css('main.single-product')
+#base_price = product.css('div.single-product__price span::text').get()
+#title = product.css('h1.single-product__title::text').get()
+#company_name = product.css('div.single-product__brand a::text').get()
+#category = response.css('ul.breadcrumbs a.breadcrumbs__link span::text').getall()[1]
+#product_code = product.css('div.accordion strong:contains("Prekės kodas")').xpath('following-sibling::text()[1]').get()
+
+
