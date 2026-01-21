@@ -31,5 +31,6 @@ class GintarineSpider(scrapy.Spider):
 #company_name = product.css('div.single-product__brand a::text').get()
 #category = response.css('ul.breadcrumbs a.breadcrumbs__link span::text').getall()[1]
 #product_code = product.css('div.accordion strong:contains("Prekės kodas")').xpath('following-sibling::text()[1]').get()
-
+#old_price = product.css('div.single-product__price-regular div.price-val::text').get()
+#discount_condition = product.css('div.single-product__bundle-message div::text').get()
 
