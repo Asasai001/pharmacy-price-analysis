@@ -6,6 +6,16 @@ class GintarineSpider(scrapy.Spider):
     allowed_domains = ["www.gintarine.lt"]
     start_urls = ["https://www.gintarine.lt/akcijos-4"]
 
+    custom_settings = {
+        'FEEDS': {
+            'gintarine_data.json': {
+                'format': 'json',
+                'overwrite': True,
+                'encoding': 'utf-8'
+            }
+        }
+    }
+
     def parse(self, response):
         products = response.css('div.product-item')
         for product in products:
@@ -57,10 +67,12 @@ class GintarineSpider(scrapy.Spider):
             final_price = base_price or old_price
 
         product_item = ProductItem()
+
         product_item["url"] = response.url
         product_item["title"] = product.css('h1.single-product__title::text').get()
         product_item["company_name"] = product.css('div.single-product__brand a::text').get()
         product_item["category"] = response.css('ul.breadcrumbs a.breadcrumbs__link span::text').getall()[1]
+        product_item["sub_category"] = response.css('ul.breadcrumbs a.breadcrumbs__link span::text').getall()[2]
         product_item["product_code"] = product.css('div.accordion strong:contains("Prekės kodas")').xpath('following-sibling::text()[1]').get()
         product_item["base_price"] = base_price
         product_item["old_price"] = old_price
@@ -69,6 +81,7 @@ class GintarineSpider(scrapy.Spider):
         product_item["discount_type"] = discount_type
         product_item["discount_condition"] = discount_condition
         product_item["source"] = "gintarine"
+
         yield product_item
 
 

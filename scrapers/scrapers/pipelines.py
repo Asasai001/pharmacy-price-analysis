@@ -23,6 +23,8 @@ class ScrapersPipeline:
             value = value.strip().lower()
             value = value.replace('\xa0€', '')
             value = value.replace('\u00a0', ' ')
+            value = value.replace('\r\n', '')
+            value = value.replace('€', ' ')
             adapter[field_name] = value
 
         codes = ['product_code']
@@ -64,6 +66,7 @@ class SaveToMySQLPipeline:
         title TEXT,
         company_name VARCHAR(60),
         category VARCHAR(80),
+        sub_category VARCHAR(80),
         product_code VARCHAR(30),
         base_price DECIMAL(10,2),
         old_price DECIMAL(10,2),
@@ -84,6 +87,7 @@ class SaveToMySQLPipeline:
                 title,
                 company_name,
                 category,
+                sub_category,
                 product_code,
                 base_price,
                 old_price,
@@ -100,6 +104,7 @@ class SaveToMySQLPipeline:
                 item.get("title"),
                 item.get("company_name"),
                 item.get("category"),
+                item.get("sub_category"),
                 item.get("product_code"),
                 item.get("base_price"),
                 item.get("old_price"),
