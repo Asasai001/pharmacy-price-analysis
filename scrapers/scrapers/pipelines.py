@@ -93,7 +93,7 @@ class SaveToMySQLPipeline:
                 discount_condition,
                 source
             )
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             """,
             (
                 item.get("url"),
