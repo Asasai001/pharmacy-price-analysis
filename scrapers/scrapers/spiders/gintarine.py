@@ -38,17 +38,23 @@ class GintarineSpider(scrapy.Spider):
 
         has_condition = bool(discount_condition)
 
+        has_condition = bool(discount_condition)
+
         if has_condition:
             discount_type = "conditional"
-            final_price = conditional_discount_price or base_price
+            final_price = (
+                    conditional_discount_price
+                    or base_price
+                    or old_price
+            )
 
-        elif old_price:
+        elif base_price and old_price:
             discount_type = "direct"
             final_price = base_price
 
         else:
             discount_type = None
-            final_price = base_price
+            final_price = base_price or old_price
 
         product_item = ProductItem()
         product_item["url"] = response.url
