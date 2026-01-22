@@ -15,4 +15,4 @@ title = product.css('div.product-title h1::text').get()
 company_name = product.css('div a.product-brand-link::text').get()
 product_code = product.css('dl.product-attributes span.product-attribute-value::text').get()
 old_price = product.css('span.product-price::text').get()
-base_price = product.css('div.
+base_price = product.css('div.product-inner-loyalty-container--special-price-amount::text').get()
