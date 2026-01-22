@@ -80,6 +80,7 @@ class CameliaSpider(scrapy.Spider):
         product_item["title"] = product.css('h1[data-test="product-name"]::text').get()
         product_item["company_name"] = product.css('a[href^="/a/prekes-zenklas/"]::text').get()
         product_item["category"] = product.css('div.product-additional-info a::text').get()
+        product_item["sub_category"] = response.css('ul.v-breadcrumbs li a::text').getall()[3]
         product_item["product_code"] = product.css('div[data-test^="product-code"]::text').get()
         product_item["base_price"] = base_price
         product_item["old_price"] = old_price

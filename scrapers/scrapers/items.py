@@ -17,6 +17,7 @@ class ProductItem(scrapy.Item):
    title = scrapy.Field()
    company_name = scrapy.Field()
    category = scrapy.Field()
+   sub_category = scrapy.Field()
    product_code = scrapy.Field()
    base_price = scrapy.Field()
    old_price = scrapy.Field()
