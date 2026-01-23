@@ -7,8 +7,23 @@ class ManoVaistineSpider(scrapy.Spider):
     start_urls = ["https://www.manovaistine.lt/akcijos?_gl=1"]
 
     def parse(self, response):
-        pass
+        products = response.css('main.body')
+        for product in products:
+            relative_url = product.css('div.item-title a::attr(href)').get()
+            full_url = response.urljoin(relative_url)
+            yield scrapy.Request(url=full_url, callback=self.parse_product_page)
 
+
+        current_page = response.meta.get("page", 1)
+        next_page = current_page + 1
+
+        if next_page <= 152:
+            next_url = f"https://www.manovaistine.lt/akcijos?_gl={next_page}"
+            yield response.follow(
+                next_url,
+                callback=self.parse,
+                meta={"page": next_page},
+            )
 
 product = response.css('div.product')
 title = product.css('div.product-title h1::text').get()
