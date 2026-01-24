@@ -1,4 +1,5 @@
 import scrapy
+from scrapers.items import ProductItem
 
 
 class ManoVaistineSpider(scrapy.Spider):
@@ -7,7 +8,7 @@ class ManoVaistineSpider(scrapy.Spider):
     start_urls = ["https://www.manovaistine.lt/akcijos?_gl=1"]
 
     def parse(self, response):
-        products = response.css('main.body')
+        products = response.css('article.item.custom-grid-item')
         for product in products:
             relative_url = product.css('div.item-title a::attr(href)').get()
             full_url = response.urljoin(relative_url)
@@ -24,6 +25,7 @@ class ManoVaistineSpider(scrapy.Spider):
                 callback=self.parse,
                 meta={"page": next_page},
             )
+
     def parse_product_page(self, response):
         product = response.css('div.product')
 
@@ -39,7 +41,8 @@ class ManoVaistineSpider(scrapy.Spider):
         # Conditions of the discount
         discount_condition = product.css('li.plus-promo-info-text::text').get()
 
-        has_direct_discount = direct_discount_price is not None
+
+        has_direct_discount = base_price is not None
         has_conditional_discount = conditional_discount_price is not None
 
         if has_conditional_discount:
