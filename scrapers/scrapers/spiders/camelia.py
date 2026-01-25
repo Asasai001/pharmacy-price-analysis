@@ -93,6 +93,10 @@ class CameliaSpider(scrapy.Spider):
         yield product_item
 
 
+#camelia_direct_discount_percentage = product.css('div.product-badge::text').get()
+#camelia_conditional_discount = product.css('div.d-flex span::text').getall()[3]
+
+
 
 
 

@@ -7,6 +7,17 @@ class ManoVaistineSpider(scrapy.Spider):
     allowed_domains = ["www.manovaistine.lt"]
     start_urls = ["https://www.manovaistine.lt/akcijos?_gl=1"]
 
+
+    custom_settings = {
+        'FEEDS': {
+            'manovaistine_data.json': {
+                'format': 'json',
+                'overwrite': True,
+                'encoding': 'utf-8'
+            }
+        }
+    }
+
     def parse(self, response):
         products = response.css('article.item.custom-grid-item')
         for product in products:
@@ -85,3 +96,7 @@ class ManoVaistineSpider(scrapy.Spider):
 #category = response.css('li.breadcrumb-item a[href]::text').getall()[1]
 #sub_category = response.css('li.breadcrumb-item a[href]::text').getall()[2]
 #source = 'manovasitine'
+
+
+#manovaistine_direct_discount = product.css('div.item-voucher-blob-text::text').get()
+#manovaistine_conditional_discount = product.css('div.item-voucher-blob-text span').xpath('following-sibling::text()[1]').get()
