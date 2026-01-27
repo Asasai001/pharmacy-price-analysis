@@ -97,6 +97,6 @@ class ManoVaistineSpider(scrapy.Spider):
 #sub_category = response.css('li.breadcrumb-item a[href]::text').getall()[2]
 #source = 'manovasitine'
 
-
+#product_item['mano_vaistine_conditional_price'] = product.css('li.plus-promo-info-text div::text').get()
 #manovaistine_direct_discount = product.css('div.item-voucher-blob-text::text').get()
 #manovaistine_conditional_discount = product.css('div.item-voucher-blob-text span').xpath('following-sibling::text()[1]').get()
