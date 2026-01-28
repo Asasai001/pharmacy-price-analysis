@@ -9,6 +9,7 @@ from itemadapter import ItemAdapter
 from dotenv import load_dotenv
 import os
 import mysql.connector
+import re
 
 load_dotenv()
 
@@ -44,6 +45,40 @@ class ScrapersPipeline:
             value = value.replace(',', '.')
             adapter[price_key] = float(value)
 
+        return item
+
+class DiscountResolver:
+    def resolve(self, item):
+        text = item.get("discount_condition")
+        if not text:
+            return item
+
+        text = text.lower()
+
+        # buy X get Y free
+        if re.search(r'(nemokamai|dovanų|1\+1)', text):
+            item["discount_model"] = "buy_x_get_y"
+            item["required_quantity"] = 2
+            item["free_quantity"] = 1
+            return item
+
+        # second item percent
+        match = re.search(r'(\d+)\s*%\s+antrai', text)
+        if match:
+            item["discount_model"] = "second_item_percent"
+            item["required_quantity"] = 2
+            item["second_item_discount_percent"] = int(match.group(1))
+            return item
+
+        # bulk minimum quantity
+        match = re.search(r'(bent|ne mažiau nei)\s+(\d+)', text)
+        if match:
+            item["discount_model"] = "bulk_min_qty"
+            item["required_quantity"] = int(match.group(2))
+            return item
+
+        # unknown conditional
+        item["discount_model"] = "unknown_conditional"
         return item
 
 class SaveToMySQLPipeline:
