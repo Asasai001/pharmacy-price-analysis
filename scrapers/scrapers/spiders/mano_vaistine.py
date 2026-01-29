@@ -30,7 +30,7 @@ class ManoVaistineSpider(scrapy.Spider):
         next_page = current_page + 1
 
         if next_page <= 152:
-            next_url = f"https://www.manovaistine.lt/akcijos?_gl={next_page}"
+            next_url = f"https://www.manovaistine.lt/akcijos/{next_page}"
             yield response.follow(
                 next_url,
                 callback=self.parse,
@@ -39,47 +39,22 @@ class ManoVaistineSpider(scrapy.Spider):
 
     def parse_product_page(self, response):
         product = response.css('div.product')
-
-        # Current price with discount or without discount if there are conditions
-        base_price = product.css('div.product-inner-loyalty-container--special-price-amount::text').get()
-
-        # Price before discount (no conditions)
-        old_price = product.css('span.product-price::text').get()
-
-        # Price with discount if conditions are applied
-        conditional_discount_price = product.css('div.product-inner-pan-special-price::text').get()
-
-        # Conditions of the discount
-        discount_condition = product.css('li.plus-promo-info-text::text').get()
-
-
-        has_direct_discount = base_price is not None
-        has_conditional_discount = conditional_discount_price is not None
-
-        if has_conditional_discount:
-            final_price = conditional_discount_price
-            discount_type = "conditional"
-        elif has_direct_discount:
-            final_price = base_price
-            discount_type = "direct"
-        else:
-            final_price = old_price
-            discount_type = None
+        breadcrumbs = response.css('li.breadcrumb-item a[href]::text').getall()
 
         product_item = ProductItem()
 
         product_item["url"] = response.url
         product_item["title"] = product.css('div.product-title h1::text').get()
         product_item["company_name"] = product.css('div a.product-brand-link::text').get()
-        product_item["category"] = response.css('li.breadcrumb-item a[href]::text').getall()[1]
-        product_item["sub_category"] = response.css('li.breadcrumb-item a[href]::text').getall()[2]
+        product_item["category"] = breadcrumbs[1] if len(breadcrumbs) > 1 else None
+        product_item["sub_category"] = breadcrumbs[2] if len(breadcrumbs) > 2 else None
         product_item["product_code"] = product.css('dl.product-attributes span.product-attribute-value::text').get()
-        product_item["base_price"] = base_price
-        product_item["old_price"] = old_price
-        product_item["conditional_discount_price"] = conditional_discount_price
-        product_item["final_price"] = final_price
-        product_item["discount_type"] = discount_type
-        product_item["discount_condition"] = discount_condition
+        product_item["base_price"] = product.css('div.product-inner-loyalty-container--special-price-amount::text').get()
+        product_item["old_price"] = product.css('span.product-price::text').get()
+        product_item["conditional_discount_price"] = product.css('div.product-inner-pan-special-price::text').get()
+        product_item["discount_condition"] = product.css('li.plus-promo-info-text::text').get()
+        product_item["manovaistine_direct_discount"] = product.css('div.item-voucher-blob-text::text').get()
+        product_item["manovaistine_conditional_discount"] = product.css('div.item-voucher-blob-text span').xpath('following-sibling::text()[1]').get()
         product_item["source"] = "manovasitine"
 
         yield product_item
