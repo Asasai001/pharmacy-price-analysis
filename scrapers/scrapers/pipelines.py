@@ -57,13 +57,16 @@ class DiscountResolverPipeline:
             item["final_price_equivalent"] = item.get("base_price")
             return item
 
-        # 1. nustatom modelį
         self.resolve_discount_model(item, condition)
-        # 2. paskaičiuojam ekvivalentinę kainą
         self.calculate_equivalent_price(item)
 
         return item
 
+    def extract_percent(self, text):
+        if not text:
+            return None
+        match = re.search(r'(\d+)', text)
+        return int(match.group(1)) if match else None
 
     def resolve_discount_model(self, item, text):
         text = item.get("discount_condition")
@@ -73,19 +76,34 @@ class DiscountResolverPipeline:
         text = text.lower()
 
         # buy X get Y free
-        if re.search(r'(nemokamai|dovanų|1+1)', text):
+        if re.search(r'(nemokamai|dovanų|1\+1)', text):
             item["discount_model"] = "buy_x_get_y"
             item["required_quantity"] = 2
             item["free_quantity"] = 1
             return item
 
+        direct = item.get("manovaistine_direct_discount", "").lower()
+
+        if "1+1" in direct:
+            item["discount_model"] = "bulk_min_qty"
+            item["required_quantity"] = 2
+            return item
+
         # second item percent
-        match = re.search(r'(speciali kaina antrai|\d+)\s*%\s+antrai', text)
+        match = re.search(r'(\d+)\s*%\s+antrai', text)
         if match:
             item["discount_model"] = "second_item_percent"
             item["required_quantity"] = 2
             item["second_item_discount_percent"] = int(match.group(1))
             return item
+
+        if "antrai" in text:
+            percent = self.extract_percent(item.get("manovaistine_conditional_discount"))
+            if percent:
+                item["discount_model"] = "second_item_percent"
+                item["required_quantity"] = 2
+                item["second_item_discount_percent"] = percent
+                return
 
         # bulk minimum quantity
         match = re.search(r'(bent|ne mažiau nei)\s+(\d+)', text)
@@ -110,7 +128,7 @@ class DiscountResolverPipeline:
             elif model == "second_item_percent":
                 discount = item["second_item_discount_percent"]/100
                 total = regular + (regular * (1 - discount))
-                item["final_price_equivalent"] = total/2
+                item["final_price_equivalent"] = round(total / 2, 2)
             elif model == "bulk_min_qty":
                 item["final_price_equivalent"] = conditional
             else:
