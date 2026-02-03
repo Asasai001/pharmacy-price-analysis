@@ -31,3 +31,26 @@ class ProductItem(scrapy.Item):
    free_quantity = scrapy.Field()
    second_item_discount_percent = scrapy.Field()
    final_price_equivalent = scrapy.Field()
+
+
+""" from gintarine
+class ProductItem(scrapy.Item):
+   url = scrapy.Field()
+   title = scrapy.Field()
+   company_name = scrapy.Field()
+   category = scrapy.Field()
+   sub_category = scrapy.Field()
+   product_code = scrapy.Field()
+   base_price = scrapy.Field()
+   old_price = scrapy.Field()
+   conditional_discount_price = scrapy.Field()
+   discount_condition = scrapy.Field()
+   gintarine_direct_discount = scrapy.Field()
+   gintarine_conditional_discount = scrapy.Field()
+   source = scrapy.Field()
+   discount_model = scrapy.Field()
+   required_quantity = scrapy.Field()
+   free_quantity = scrapy.Field()
+   second_item_discount_percent = scrapy.Field()
+   bulk_discount_percent = scrapy.Field()
+   final_price_equivalent = scrapy.Field()"""
