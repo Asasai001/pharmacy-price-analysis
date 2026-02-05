@@ -53,4 +53,5 @@ class ProductItem(scrapy.Item):
    free_quantity = scrapy.Field()
    second_item_discount_percent = scrapy.Field()
    bulk_discount_percent = scrapy.Field()
+   direct_discount_percent = scrapy.Field()
    final_price_equivalent = scrapy.Field()"""

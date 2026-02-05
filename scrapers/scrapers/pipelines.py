@@ -211,8 +211,6 @@ class SaveToMySQLPipeline:
         self.conn.close()
 
 """
-manovasitine and gintarine
-
 class DiscountResolverPipeline:
     def process_item(self, item, spider):
         source = item.get("source")
@@ -272,8 +270,9 @@ class DiscountResolverPipeline:
     def resolve_gintarine(self, item):
         text = (item.get("discount_condition") or "").lower()
         ribbon = (item.get("gintarine_conditional_discount") or "").lower()
+        combined = f"{text} {ribbon}"
 
-        if re.search(r'(dovan|nemokam|antra.*nemok)', text):
+        if re.search(r'(2\s*u[zž]\s*1|dovan|nemokam|antra.*nemok)', combined):
             item["discount_model"] = "buy_x_get_y"
             item["required_quantity"] = 2
             item["free_quantity"] = 1
@@ -293,6 +292,7 @@ class DiscountResolverPipeline:
         if percent:
             item["discount_model"] = "direct_percent"
             item["required_quantity"] = 1
+            item["direct_discount_percent"] = percent
             return
 
         item["discount_model"] = "unknown_conditional"
@@ -310,12 +310,16 @@ class DiscountResolverPipeline:
             total = regular + (regular * (1 - discount))
             item["final_price_equivalent"] = round(total / 2, 2)
         elif model == "bulk_min_qty":
-            item["final_price_equivalent"] = conditional
+            if conditional is not None:
+                item["final_price_equivalent"] = conditional
+            elif regular is not None and item.get("bulk_discount_percent") is not None:
+                discount = item["bulk_discount_percent"] / 100
+                item["final_price_equivalent"] = round(regular * (1 - discount), 2)
+            else:
+                item["final_price_equivalent"] = None
         elif model == "direct_percent":
             item["final_price_equivalent"] = item.get("base_price")
-        elif model == "bulk_min_qty" and item.get("bulk_discount_percent"):
-            discount = item["bulk_discount_percent"] / 100
-            regular = item.get("old_price")
-            item["final_price_equivalent"] = round(regular * (1 - discount), 2)
         else:
-            item["final_price_equivalent"] = None"""
+            item["final_price_equivalent"] = None
+            
+"""
