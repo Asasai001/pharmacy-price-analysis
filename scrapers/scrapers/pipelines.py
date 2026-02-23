@@ -203,7 +203,7 @@ class SaveToMySQLPipeline:
 
         self.cur.execute("""
         CREATE TABLE IF NOT EXISTS pharmacy_prices(
-        id int NOT NULL auto_increment,
+        id INT NOT NULL AUTO_INCREMENT,
         url VARCHAR(255),
         title TEXT,
         company_name VARCHAR(60),
@@ -213,12 +213,17 @@ class SaveToMySQLPipeline:
         base_price DECIMAL(10,2),
         old_price DECIMAL(10,2),
         conditional_discount_price DECIMAL(10,2),
-        final_price DECIMAL(10,2),
-        discount_type VARCHAR(30),
         discount_condition VARCHAR(255),
+        discount_model VARCHAR(40),
         source VARCHAR(40),
+        required_quantity INT,
+        free_quantity INT,
+        direct_discount_percent INT,
+        bulk_discount_percent INT,
+        second_item_discount_percent INT,
+        final_price_equivalent DECIMAL(10,2),
         PRIMARY KEY (id)
-        )
+    )
         """)
 
     def process_item(self, item, spider):
@@ -234,12 +239,17 @@ class SaveToMySQLPipeline:
                 base_price,
                 old_price,
                 conditional_discount_price,
-                final_price,
-                discount_type,
                 discount_condition,
-                source
+                discount_model,
+                source,
+                required_quantity,
+                free_quantity,
+                direct_discount_percent,
+                bulk_discount_percent,
+                second_item_discount_percent,
+                final_price_equivalent
             )
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             """,
             (
                 item.get("url"),
@@ -251,129 +261,20 @@ class SaveToMySQLPipeline:
                 item.get("base_price"),
                 item.get("old_price"),
                 item.get("conditional_discount_price"),
-                item.get("final_price"),
-                item.get("discount_type"),
                 item.get("discount_condition"),
+                item.get("discount_model"),
                 item.get("source"),
+                item.get("required_quantity"),
+                item.get("free_quantity"),
+                item.get("direct_discount_percent"),
+                item.get("bulk_discount_percent"),
+                item.get("second_item_discount_percent"),
+                item.get("final_price_equivalent"),
             )
         )
-        self.conn.commit()
         return item
 
     def close_spider(self, spider):
+        self.conn.commit()
         self.cur.close()
         self.conn.close()
-
-"""
-class DiscountResolverPipeline:
-    def process_item(self, item, spider):
-        source = item.get("source")
-
-        condition = item.get("discount_condition")
-        ribbon = item.get("gintarine_conditional_discount")
-
-        if not condition and not ribbon:
-            item["discount_model"] = "none"
-            item["required_quantity"] = 1
-            item["final_price_equivalent"] = item.get("base_price")
-            return item
-
-        if source == "manovasitine":
-            self.resolve_manovaistine(item)
-
-        elif source == "gintarine":
-            self.resolve_gintarine(item)
-
-        self.calculate_equivalent_price(item)
-        return item
-
-    def extract_percent(self, text):
-        if not text:
-            return None
-        match = re.search(r'(\d+)', text)
-        return int(match.group(1)) if match else None
-
-    def resolve_manovaistine(self, item):
-        text = (item.get("discount_condition") or "").lower()
-
-        # 1+1 / nemokamai
-        if re.search(r'(1\+1|nemokamai|dovanų)', text):
-            item["discount_model"] = "buy_x_get_y"
-            item["required_quantity"] = 2
-            item["free_quantity"] = 1
-            return
-
-        # antrai prekei %
-        if "antrai" in text:
-            percent = self.extract_percent(item.get("manovaistine_conditional_discount"))
-            if percent:
-                item["discount_model"] = "second_item_percent"
-                item["required_quantity"] = 2
-                item["second_item_discount_percent"] = percent
-                return
-
-        # perkant bent X
-        match = re.search(r'bent\s+(\d+)', text)
-        if match:
-            item["discount_model"] = "bulk_min_qty"
-            item["required_quantity"] = int(match.group(1))
-            return
-
-        item["discount_model"] = "unknown_conditional"
-
-    def resolve_gintarine(self, item):
-        text = (item.get("discount_condition") or "").lower()
-        ribbon = (item.get("gintarine_conditional_discount") or "").lower()
-        combined = f"{text} {ribbon}"
-
-        if re.search(r'(2\s*u[zž]\s*1|dovan|nemokam|antra.*nemok)', combined):
-            item["discount_model"] = "buy_x_get_y"
-            item["required_quantity"] = 2
-            item["free_quantity"] = 1
-            return
-
-        match = re.search(r'perkant\s+(\d+)', text)
-        if match:
-            qty = int(match.group(1))
-            percent = self.extract_percent(ribbon) or self.extract_percent(text)
-
-            item["discount_model"] = "bulk_min_qty"
-            item["required_quantity"] = qty
-            item["bulk_discount_percent"] = percent
-            return
-
-        percent = self.extract_percent(ribbon)
-        if percent:
-            item["discount_model"] = "direct_percent"
-            item["required_quantity"] = 1
-            item["direct_discount_percent"] = percent
-            return
-
-        item["discount_model"] = "unknown_conditional"
-
-    def calculate_equivalent_price(self, item):
-        model = item.get("discount_model")
-        regular = item.get("old_price")
-        conditional = item.get("conditional_discount_price")
-
-        if model == "buy_x_get_y":
-            total = regular * (item["required_quantity"] - item["free_quantity"])
-            item["final_price_equivalent"] = round(total / item["required_quantity"], 2)
-        elif model == "second_item_percent":
-            discount = item["second_item_discount_percent"]/100
-            total = regular + (regular * (1 - discount))
-            item["final_price_equivalent"] = round(total / 2, 2)
-        elif model == "bulk_min_qty":
-            if conditional is not None:
-                item["final_price_equivalent"] = conditional
-            elif regular is not None and item.get("bulk_discount_percent") is not None:
-                discount = item["bulk_discount_percent"] / 100
-                item["final_price_equivalent"] = round(regular * (1 - discount), 2)
-            else:
-                item["final_price_equivalent"] = None
-        elif model == "direct_percent":
-            item["final_price_equivalent"] = item.get("base_price")
-        else:
-            item["final_price_equivalent"] = None
-            
-"""

@@ -53,8 +53,8 @@ class ManoVaistineSpider(scrapy.Spider):
         product_item["old_price"] = product.css('span.product-price::text').get()
         product_item["conditional_discount_price"] = product.css('div.product-inner-pan-special-price::text').get()
         product_item["discount_condition"] = product.css('li.plus-promo-info-text::text').get()
-        product_item["manovaistine_direct_discount"] = product.css('div.item-voucher-blob-text::text').get()
-        product_item["manovaistine_conditional_discount"] = product.css('div.item-voucher-blob-text span').xpath('following-sibling::text()[1]').get()
+        product_item["direct_discount"] = product.css('div.item-voucher-blob-text::text').get()
+        product_item["conditional_discount"] = product.css('div.item-voucher-blob-text span').xpath('following-sibling::text()[1]').get()
         product_item["source"] = "manovasitine"
 
         yield product_item
