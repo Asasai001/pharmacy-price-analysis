@@ -52,7 +52,7 @@ class DiscountResolverPipeline:
         source = item.get("source")
 
         condition = item.get("discount_condition")
-        ribbon = item.get("gintarine_conditional_discount")
+        ribbon = item.get("conditional_discount")
 
         if not condition and not ribbon:
             item["discount_model"] = "none"
@@ -89,7 +89,7 @@ class DiscountResolverPipeline:
             return
 
         if "antrai" in text:
-            percent = self.extract_percent(item.get("manovaistine_conditional_discount"))
+            percent = self.extract_percent(item.get("conditional_discount"))
             if percent:
                 item["discount_model"] = "second_item_percent"
                 item["required_quantity"] = 2
@@ -106,7 +106,7 @@ class DiscountResolverPipeline:
 
     def resolve_gintarine(self, item):
         text = (item.get("discount_condition") or "").lower()
-        ribbon = (item.get("gintarine_conditional_discount") or "").lower()
+        ribbon = (item.get("conditional_discount") or "").lower()
         combined = f"{text} {ribbon}"
 
         if re.search(r'(2\s*u[zž]\s*1|dovan|nemokam|antra.*nemok)', combined):

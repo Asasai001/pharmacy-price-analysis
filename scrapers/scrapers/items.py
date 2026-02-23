@@ -23,14 +23,16 @@ class ProductItem(scrapy.Item):
    old_price = scrapy.Field()
    conditional_discount_price = scrapy.Field()
    discount_condition = scrapy.Field()
-   manovaistine_direct_discount = scrapy.Field()
-   manovaistine_conditional_discount = scrapy.Field()
+   direct_discount = scrapy.Field()
+   conditional_discount = scrapy.Field()
    source = scrapy.Field()
    discount_model = scrapy.Field()
    required_quantity = scrapy.Field()
    free_quantity = scrapy.Field()
    second_item_discount_percent = scrapy.Field()
    final_price_equivalent = scrapy.Field()
+   bulk_discount_percent = scrapy.Field()
+   direct_discount_percent = scrapy.Field()
 
 
 """ from gintarine
