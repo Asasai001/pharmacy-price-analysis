@@ -39,62 +39,28 @@ class CameliaSpider(scrapy.Spider):
 
     def parse_product_page(self, response):
         product = response.css("div.product-grid")
-
-        # Current price with discount or without discount if there are conditions
-        base_price = product.css(
-            'div[data-test="product-price"] div[data-test="product-price-formatted"]::text'
-        ).get()
-
-        # Price before discount (no conditions)
-        old_price = product.css(
-            'span[data-test^="product-price-original-item"]::text'
-        ).get()
-
-        # Price with discount if conditions are applied
-        conditional_discount_price = product.css(
-            'span.discounted-price-value::text'
-        ).get()
-
-        # Conditions of the discount
-        discount_condition_raw = product.css(
-            'div.badge-content div::text'
-        ).getall()
-
-        discount_condition = " ".join(
-            t.strip() for t in discount_condition_raw if t.strip()
-        )
-
-        if conditional_discount_price:
-            final_price = conditional_discount_price
-            discount_type = "conditional"
-        elif old_price:
-            final_price = base_price
-            discount_type = "direct"
-        else:
-            final_price = base_price
-            discount_type = None
-
         product_item = ProductItem()
+
+        breadcrumbs = response.css('ul.v-breadcrumbs li a::text').getall()
+
+        old_price = product.css('span[data-test^="product-price-original-item"]::text').get()
+        if old_price is None:
+            old_price = product.css('div.price-value::text').get()
 
         product_item["url"] = response.url
         product_item["title"] = product.css('h1[data-test="product-name"]::text').get()
         product_item["company_name"] = product.css('a[href^="/a/prekes-zenklas/"]::text').get()
         product_item["category"] = product.css('div.product-additional-info a::text').get()
-        product_item["sub_category"] = response.css('ul.v-breadcrumbs li a::text').getall()[3]
+        product_item["sub_category"] = breadcrumbs[3] if len(breadcrumbs) > 3 else None
         product_item["product_code"] = product.css('div[data-test^="product-code"]::text').get()
-        product_item["base_price"] = base_price
+        product_item["base_price"] = product.css('div[data-test="product-price"] div[data-test="product-price-formatted"]::text').get()
         product_item["old_price"] = old_price
-        product_item["conditional_discount_price"] = conditional_discount_price
-        product_item["final_price"] = final_price
-        product_item["discount_type"] = discount_type
-        product_item["discount_condition"] = discount_condition
+        product_item["conditional_discount_price"] = product.css('span.discounted-price-value::text').get()
+        product_item["discount_condition"] = " ".join(product.css('div.badge-content div::text').getall())
+        product_item["camelia_direct_discount"] = product.css('div.badge-percent span::text').get()
         product_item["source"] = "camelia"
 
         yield product_item
-
-
-#camelia_direct_discount_percentage = product.css('div.product-badge::text').get()
-#camelia_conditional_discount = product.css('div.d-flex span::text').getall()[3]
 
 
 

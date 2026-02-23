@@ -56,4 +56,4 @@ class GintarineSpider(scrapy.Spider):
 
         yield product_item
 
-#gintarine_discount_percentage = response.css('div.ribbons div.ribbon::text').get()
+
