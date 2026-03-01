@@ -51,15 +51,6 @@ class DiscountResolverPipeline:
     def process_item(self, item, spider):
         source = item.get("source")
 
-        condition = item.get("discount_condition")
-        ribbon = item.get("conditional_discount")
-
-        if not condition and not ribbon:
-            item["discount_model"] = "none"
-            item["required_quantity"] = 1
-            item["final_price_equivalent"] = item.get("base_price")
-            return item
-
         if source == "manovasitine":
             self.resolve_manovaistine(item)
 
@@ -81,7 +72,11 @@ class DiscountResolverPipeline:
     def resolve_manovaistine(self, item):
         text = (item.get("discount_condition") or "").lower()
 
-        # 1+1 / nemokamai
+        if not text:
+            item["discount_model"] = "none"
+            item["required_quantity"] = 1
+            return
+
         if re.search(r'(1\+1|nemokamai|dovanų)', text):
             item["discount_model"] = "buy_x_get_y"
             item["required_quantity"] = 2
@@ -108,6 +103,11 @@ class DiscountResolverPipeline:
         text = (item.get("discount_condition") or "").lower()
         ribbon = (item.get("conditional_discount") or "").lower()
         combined = f"{text} {ribbon}"
+
+        if not text and not ribbon:
+            item["discount_model"] = "none"
+            item["required_quantity"] = 1
+            return
 
         if re.search(r'(2\s*u[zž]\s*1|dovan|nemokam|antra.*nemok)', combined):
             item["discount_model"] = "buy_x_get_y"
@@ -136,7 +136,12 @@ class DiscountResolverPipeline:
 
     def resolve_camelia(self, item):
         text = (item.get("discount_condition") or "").lower()
-        percent_text = (item.get("camelia_direct_discount") or "").lower()
+        percent_text = (item.get("direct_discount") or "").lower()
+
+        if not text and not percent_text:
+            item["discount_model"] = "none"
+            item["required_quantity"] = 1
+            return
 
         if re.search(r'(nemokamai|dovanų|1\+1)', text):
             item["discount_model"] = "buy_x_get_y"
@@ -168,7 +173,7 @@ class DiscountResolverPipeline:
         regular = item.get("old_price")
         conditional = item.get("conditional_discount_price")
 
-        if model == "buy_x_get_y":
+        if model == "buy_x_get_y" and regular:
             total = regular * (item["required_quantity"] - item["free_quantity"])
             item["final_price_equivalent"] = round(total / item["required_quantity"], 2)
         elif model == "second_item_percent":
