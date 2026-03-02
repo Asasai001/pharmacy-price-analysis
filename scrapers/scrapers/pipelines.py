@@ -109,43 +109,54 @@ class DiscountResolverPipeline:
             return
 
         item["discount_model"] = "unknown_conditional"
+        item["required_quantity"] = 1
         item["direct_discount_percent"] = None
         item["bulk_discount_percent"] = None
 
     def resolve_gintarine(self, item):
-        text = (item.get("discount_condition") or "").lower()
-        ribbon = (item.get("conditional_discount") or "").lower()
-        combined = f"{text} {ribbon}"
+        message_raw = item.get("direct_discount_raw")
+        ribbon_raw = item.get("conditional_discount_raw")
+        message = (message_raw or "").lower()
+        ribbon = (ribbon_raw or "").lower()
+        combined = f"{message} {ribbon}"
 
-        if not text and not ribbon:
+        percent = self.extract_percent(ribbon) or self.extract_percent(message)
+
+        if not message and not ribbon:
             item["discount_model"] = "none"
             item["required_quantity"] = 1
+            item["direct_discount_percent"] = None
+            item["bulk_discount_percent"] = None
             return
 
         if re.search(r'(2\s*u[zž]\s*1|dovan|nemokam|antra.*nemok)', combined):
             item["discount_model"] = "buy_x_get_y"
             item["required_quantity"] = 2
             item["free_quantity"] = 1
+            item["direct_discount_percent"] = None
+            item["bulk_discount_percent"] = None
             return
 
-        match = re.search(r'perkant\s+(\d+)', text)
+        match = re.search(r'perkant\s+(\d+)', combined)
         if match:
             qty = int(match.group(1))
-            percent = self.extract_percent(ribbon) or self.extract_percent(text)
-
             item["discount_model"] = "bulk_min_qty"
             item["required_quantity"] = qty
             item["bulk_discount_percent"] = percent
+            item["direct_discount_percent"] = None
             return
 
-        percent = self.extract_percent(ribbon)
         if percent:
             item["discount_model"] = "direct_percent"
             item["required_quantity"] = 1
             item["direct_discount_percent"] = percent
+            item["bulk_discount_percent"] = None
             return
 
         item["discount_model"] = "unknown_conditional"
+        item["required_quantity"] = 1
+        item["direct_discount_percent"] = None
+        item["bulk_discount_percent"] = None
 
     def resolve_camelia(self, item):
         text = (item.get("discount_condition") or "").lower()
@@ -184,6 +195,7 @@ class DiscountResolverPipeline:
             return
 
         item["discount_model"] = "unknown_conditional"
+        item["required_quantity"] = 1
         item["direct_discount_percent"] = None
         item["bulk_discount_percent"] = None
 
@@ -245,8 +257,8 @@ class SaveToMySQLPipeline:
         source VARCHAR(40),
         required_quantity INT,
         free_quantity INT,
-        direct_discount_raw VARCHAR(20),
-        conditional_discount_raw VARCHAR(20),
+        direct_discount_raw VARCHAR(255),
+        conditional_discount_raw VARCHAR(255),
         direct_discount_percent INT,
         bulk_discount_percent INT,
         second_item_discount_percent INT,

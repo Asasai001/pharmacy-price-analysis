@@ -50,8 +50,8 @@ class GintarineSpider(scrapy.Spider):
         product_item["base_price"] = product.css('div.single-product__price span::text').get()
         product_item["old_price"] = product.css('div.single-product__price-regular div.price-val::text').get()
         product_item["conditional_discount_price"] = product.css('div.single-product__price span::text').get()
-        product_item["direct_discount_percent"] =  product.css('div.single-product__discount-message div::text').get()
-        product_item["conditional_discount"] = gintarine_discount_percentage
+        product_item["direct_discount_raw"] =  product.css('div.single-product__discount-message div::text').get()
+        product_item["conditional_discount_raw"] = gintarine_discount_percentage
         product_item["source"] = "gintarine"
 
         yield product_item
