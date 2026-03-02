@@ -71,16 +71,23 @@ class DiscountResolverPipeline:
 
     def resolve_manovaistine(self, item):
         text = (item.get("discount_condition") or "").lower()
+        direct_raw = item.get("direct_discount_raw")
+        direct_percent = self.extract_percent(direct_raw)
 
-        if not text:
+
+        if not text and not direct_percent:
             item["discount_model"] = "none"
             item["required_quantity"] = 1
+            item["direct_discount_percent"] = None
+            item["bulk_discount_percent"] = None
             return
 
         if re.search(r'(1\+1|nemokamai|dovanų)', text):
             item["discount_model"] = "buy_x_get_y"
             item["required_quantity"] = 2
             item["free_quantity"] = 1
+            item["direct_discount_percent"] = None
+            item["bulk_discount_percent"] = None
             return
 
         if "antrai" in text:
@@ -89,15 +96,21 @@ class DiscountResolverPipeline:
                 item["discount_model"] = "second_item_percent"
                 item["required_quantity"] = 2
                 item["second_item_discount_percent"] = percent
+                item["direct_discount_percent"] = None
+                item["bulk_discount_percent"] = None
                 return
 
         match = re.search(r'bent\s+(\d+)', text)
         if match:
             item["discount_model"] = "bulk_min_qty"
             item["required_quantity"] = int(match.group(1))
+            item["bulk_discount_percent"] = direct_percent
+            item["direct_discount_percent"] = None
             return
 
         item["discount_model"] = "unknown_conditional"
+        item["direct_discount_percent"] = None
+        item["bulk_discount_percent"] = None
 
     def resolve_gintarine(self, item):
         text = (item.get("discount_condition") or "").lower()
@@ -136,44 +149,50 @@ class DiscountResolverPipeline:
 
     def resolve_camelia(self, item):
         text = (item.get("discount_condition") or "").lower()
-        percent_text = (item.get("direct_discount") or "").lower()
+        direct_raw = item.get("direct_discount_raw")
+        direct_percent = self.extract_percent(direct_raw)
 
-        if not text and not percent_text:
+        if not text and not direct_percent :
             item["discount_model"] = "none"
             item["required_quantity"] = 1
+            item["direct_discount_percent"] = None
+            item["bulk_discount_percent"] = None
             return
 
         if re.search(r'(nemokamai|dovanų|1\+1)', text):
             item["discount_model"] = "buy_x_get_y"
             item["required_quantity"] = 2
             item["free_quantity"] = 1
+            item["bulk_discount_percent"] = None
+            item["direct_discount_percent"] = None
             return
 
         match = re.search(r'bent\s+(\d+)', text)
         if match:
             qty = int(match.group(1))
-            percent = self.extract_percent(percent_text)
-
             item["discount_model"] = "bulk_min_qty"
             item["required_quantity"] = qty
-            item["bulk_discount_percent"] = percent
+            item["bulk_discount_percent"] = direct_percent
+            item["direct_discount_percent"] = None
             return
 
-        percent = self.extract_percent(percent_text)
-        if percent:
+        if direct_percent:
             item["discount_model"] = "direct_percent"
             item["required_quantity"] = 1
-            item["direct_discount_percent"] = percent
+            item["direct_discount_percent"] = direct_percent
+            item["bulk_discount_percent"] = None
             return
 
         item["discount_model"] = "unknown_conditional"
+        item["direct_discount_percent"] = None
+        item["bulk_discount_percent"] = None
 
     def calculate_equivalent_price(self, item):
         model = item.get("discount_model")
         regular = item.get("old_price")
         conditional = item.get("conditional_discount_price")
 
-        if model == "buy_x_get_y" and regular:
+        if model == "buy_x_get_y" and regular is not None:
             total = regular * (item["required_quantity"] - item["free_quantity"])
             item["final_price_equivalent"] = round(total / item["required_quantity"], 2)
         elif model == "second_item_percent":
@@ -190,6 +209,8 @@ class DiscountResolverPipeline:
                 item["final_price_equivalent"] = None
         elif model == "direct_percent":
             item["final_price_equivalent"] = item.get("base_price")
+        elif model == "none":
+            item["final_price_equivalent"] = item.get("base_price")
         else:
             item["final_price_equivalent"] = None
 
@@ -202,6 +223,7 @@ class SaveToMySQLPipeline:
             password=os.getenv("DB_PASSWORD"),
             database=os.getenv("DB_NAME"),
             port=os.getenv("DB_PORT"),
+            autocommit = True,
         )
 
         self.cur = self.conn.cursor()
@@ -223,6 +245,8 @@ class SaveToMySQLPipeline:
         source VARCHAR(40),
         required_quantity INT,
         free_quantity INT,
+        direct_discount_raw VARCHAR(20),
+        conditional_discount_raw VARCHAR(20),
         direct_discount_percent INT,
         bulk_discount_percent INT,
         second_item_discount_percent INT,
@@ -249,12 +273,14 @@ class SaveToMySQLPipeline:
                 source,
                 required_quantity,
                 free_quantity,
+                direct_discount_raw,
+                conditional_discount_raw,
                 direct_discount_percent,
                 bulk_discount_percent,
                 second_item_discount_percent,
                 final_price_equivalent
             )
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             """,
             (
                 item.get("url"),
@@ -271,6 +297,8 @@ class SaveToMySQLPipeline:
                 item.get("source"),
                 item.get("required_quantity"),
                 item.get("free_quantity"),
+                item.get("direct_discount_raw"),
+                item.get("conditional_discount_raw"),
                 item.get("direct_discount_percent"),
                 item.get("bulk_discount_percent"),
                 item.get("second_item_discount_percent"),

@@ -27,8 +27,13 @@ class ProductItem(scrapy.Item):
    source = scrapy.Field()
    required_quantity = scrapy.Field()
    free_quantity = scrapy.Field()
+
+   direct_discount_raw = scrapy.Field()
+   conditional_discount_raw = scrapy.Field()
+
    direct_discount_percent = scrapy.Field()
    bulk_discount_percent = scrapy.Field()
+
    second_item_discount_percent = scrapy.Field()
    final_price_equivalent = scrapy.Field()
 

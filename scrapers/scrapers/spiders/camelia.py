@@ -57,7 +57,8 @@ class CameliaSpider(scrapy.Spider):
         product_item["old_price"] = old_price
         product_item["conditional_discount_price"] = product.css('span.discounted-price-value::text').get()
         product_item["discount_condition"] = " ".join(product.css('div.badge-content div::text').getall())
-        product_item["direct_discount"] = product.css('div.badge-percent span::text').get()
+        product_item["direct_discount_raw"] = product.css('div.badge-percent span::text').get()
+        product_item["conditional_discount_raw"] = product.css("li[data-test^='product-card-discount-0'] div::text").get()
         product_item["source"] = "camelia"
 
         yield product_item
