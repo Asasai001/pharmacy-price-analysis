@@ -4,6 +4,10 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+from urllib.parse import urlencode
+from random import randint
+import requests
+import logging
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
@@ -98,3 +102,65 @@ class ScrapersDownloaderMiddleware:
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
+
+
+class ScrapeOpsFakeBrowserHeaderAgentMiddleware:
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler.settings)
+
+    def __init__(self, settings):
+        self.scrapeops_api_key = os.getenv("SCRAPEOPS_API_KEY")
+        self.scrapeops_endpoint = settings.get('SCRAPEOPS_FAKE_BROWSER_HEADER_ENDPOINT', 'http://headers.scrapeops.io/v1/browser-headers')
+        self.scrapeops_fake_browser_headers_active = settings.get('SCRAPEOPS_FAKE_BROWSER_HEADER_ENABLED', False)
+        self.scrapeops_num_results = settings.get('SCRAPEOPS_NUM_RESULTS')
+        self.headers_list = []
+        self.logger = logging.getLogger(__name__)
+        if self.scrapeops_fake_browser_headers_active:
+            self._get_headers_list()
+        self._validate_active_state()
+
+    def _get_headers_list(self):
+        if not self.scrapeops_api_key:
+            self.logger.error("SCRAPEOPS_API_KEY not detected, middleware will shut down.")
+            self.scrapeops_fake_browser_headers_active = False
+            return
+
+        payload = {'api_key': self.scrapeops_api_key}
+        if self.scrapeops_num_results is not None:
+            payload['num_results'] = self.scrapeops_num_results
+        try:
+            response = requests.get(self.scrapeops_endpoint, params=urlencode(payload), timeout=5)
+            response.raise_for_status()
+            json_response = response.json()
+            self.headers_list = json_response.get('result', [])
+            if not self.headers_list:
+                self.logger.warning("ScrapeOps returned empty list.")
+        except Exception as e:
+            self.logger.error(f"Error occurred while trying to get headers from ScrapeOps: {e}")
+            self.headers_list = []
+            self.scrapeops_fake_browser_headers_active = False
+
+    def _validate_active_state(self):
+        if (not self.scrapeops_api_key or
+            not self.scrapeops_fake_browser_headers_active or
+            not self.headers_list):
+            self.scrapeops_fake_browser_headers_active = False
+
+    def _get_random_browser_header(self):
+        if not self.headers_list:
+            return {}
+        random_index = randint(0, len(self.headers_list) - 1)
+        return self.headers_list[random_index]
+
+    def process_request(self, request, spider):
+        if not self.scrapeops_fake_browser_headers_active:
+            return
+
+        random_browser_header = self._get_random_browser_header()
+        if not random_browser_header:
+            return
+
+        request.headers.update(random_browser_header)
+        self.logger.debug(f"New Headers: {random_browser_header}")
