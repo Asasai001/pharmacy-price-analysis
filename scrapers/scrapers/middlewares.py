@@ -8,6 +8,10 @@ from urllib.parse import urlencode
 from random import randint
 import requests
 import logging
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
