@@ -10,6 +10,4 @@ def get_engine():
         f"{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
     )
 
-    engine = get_engine()
-    df = pd.read_sql(query, engine)
 
