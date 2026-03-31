@@ -1,4 +1,4 @@
-from load_data import load_query
+from analysis.load_data import load_query
 
 #Brand avg kainos
 def brand_avg_price():
@@ -58,7 +58,7 @@ def brand_cat_avg():
     FROM
 	    pharmacy_prices_clean.pharmacy_prices_clean
     WHERE
-	    company_name IS NOT NULL
+	    company_name IS NOT NULL AND final_price_equivalent IS NOT NULL
     GROUP BY
 	    company_name, mapped_categories
     ORDER BY

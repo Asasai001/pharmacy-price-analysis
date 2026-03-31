@@ -1,4 +1,4 @@
-from load_data import load_query
+from analysis.load_data import load_query
 
 def discount_model_pharmacy():
     query = """
@@ -28,7 +28,7 @@ def bulk_min_qty():
     FROM
 	    pharmacy_prices_clean.pharmacy_prices_clean
     WHERE
-	    base_price IS NOT NULL AND old_price IS NOT NULL AND discount_model = 'bulk_min_qty'
+	    final_price_equivalent IS NOT NULL AND old_price IS NOT NULL AND discount_model = 'bulk_min_qty'
     GROUP BY
 	    source, mapped_categories, discount_model
     ORDER BY
@@ -48,7 +48,7 @@ def direct_percent():
     FROM
 	    pharmacy_prices_clean.pharmacy_prices_clean
     WHERE
-	    base_price IS NOT NULL AND old_price IS NOT NULL AND discount_model = 'direct_percent'
+	    final_price_equivalent IS NOT NULL AND old_price IS NOT NULL AND discount_model = 'direct_percent'
     GROUP BY
 	    source, mapped_categories, discount_model
     ORDER BY
@@ -68,7 +68,7 @@ def buy_x_get_y():
         FROM
     	    pharmacy_prices_clean.pharmacy_prices_clean
         WHERE
-    	    base_price IS NOT NULL AND old_price IS NOT NULL AND discount_model = 'buy_x_get_y'
+    	    final_price_equivalent IS NOT NULL AND old_price IS NOT NULL AND discount_model = 'buy_x_get_y'
         GROUP BY
     	    source, mapped_categories, discount_model
         ORDER BY
@@ -77,16 +77,12 @@ def buy_x_get_y():
     return load_query(query)
 
 
-def run_discount_analysis():
-    model = discount_model_pharmacy()
-    min_qty = bulk_min_qty()
-    direct = direct_percent()
-    buy_get = buy_x_get_y()
-    return model, min_qty, direct, buy_get
+#def run_discount_analysis():
+#    model = discount_model_pharmacy()
+#    min_qty = bulk_min_qty()
+#    direct = direct_percent()
+#    buy_get = buy_x_get_y()
+#    return model, min_qty, direct, buy_get
 
 
 
-
-#if __name__ == "__main__":
- #   df = buy_x_get_y()
-  #  print(df)
