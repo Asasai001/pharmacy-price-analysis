@@ -15,6 +15,8 @@ def discount_model_pharmacy():
     """
     return load_query(query)
 
+#Avg kainos skirtumas tarp senos kainos ir siulomos per nuolaidos kategorijas
+
 def bulk_min_qty():
     query = """
     SELECT 
