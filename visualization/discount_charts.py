@@ -47,11 +47,6 @@ def buy_get_free_discount():
 def brand_price_range_5():
     df = brand_avg_pharm()
 
-    #<= 5 yra 29
-    #5 - 10 yra 36
-    #10 -20 yra 86
-    #>20 yra 45
-
     company_pharmacy_count = df.groupby('Company Name')['Pharmacy'].nunique()
     companies_with_two = company_pharmacy_count[company_pharmacy_count >= 2].index
     filtered = df[
@@ -67,7 +62,7 @@ def brand_price_range_5():
 
     plt.figure(figsize=(12, 10))
     sns.heatmap(pivot, annot=True, fmt='.2f', cmap='RdYlGn_r', center=pivot.mean().mean())
-    plt.title('Vidutinė kaina pagal įmonę ir vaistinę')
+    plt.title('Average Price by Brand < 5 eur')
     plt.show()
 
 def brand_price_range_10():
@@ -89,7 +84,7 @@ def brand_price_range_10():
 
     plt.figure(figsize=(12, 10))
     sns.heatmap(pivot, annot=True, fmt='.2f', cmap='RdYlGn_r', center=pivot.mean().mean())
-    plt.title('Vidutinė kaina pagal įmonę ir vaistinę')
+    plt.title('Average Price by Brand Between 5-10 eur')
     plt.show()
 
 def brand_price_range_20():
@@ -111,7 +106,7 @@ def brand_price_range_20():
 
     plt.figure(figsize=(12, 10))
     sns.heatmap(pivot, annot=True, fmt='.2f', cmap='RdYlGn_r', center=pivot.mean().mean())
-    plt.title('Vidutinė kaina pagal įmonę ir vaistinę')
+    plt.title('Average Price by Brand Between 10-20 eur')
     plt.show()
 
 def brand_price_range_20plus():
@@ -132,7 +127,7 @@ def brand_price_range_20plus():
 
     plt.figure(figsize=(12, 10))
     sns.heatmap(pivot, annot=True, fmt='.2f', cmap='RdYlGn_r', vmin=20, vmax=100)
-    plt.title('Vidutinė kaina pagal įmonę ir vaistinę')
+    plt.title('Average Price by Brand > 20 eur')
     plt.show()
 
 
