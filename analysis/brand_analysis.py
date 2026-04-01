@@ -52,6 +52,7 @@ def brand_cat_avg():
     query = """
     SELECT
 	    company_name AS 'Company Name',
+	    source AS 'Pharmacy',
         ROUND(AVG(final_price_equivalent), 2) AS 'Average Item Price',
         mapped_categories AS 'Item Category',
         COUNT(*) AS 'Total Number Of Items'
@@ -60,7 +61,7 @@ def brand_cat_avg():
     WHERE
 	    company_name IS NOT NULL AND final_price_equivalent IS NOT NULL
     GROUP BY
-	    company_name, mapped_categories
+	    company_name, mapped_categories, source
     ORDER BY
 	    company_name;
 	"""

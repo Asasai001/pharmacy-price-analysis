@@ -5,7 +5,9 @@ from visualization.price_charts import (compare_pharmacies_prices,
 from visualization.pharmacy_comparison import (total_number)
 
 from visualization.discount_charts import (discount_distribution, direct_discount,
-                                           bulk_min_qty_discount)
+                                           bulk_min_qty_discount, buy_get_free_discount,
+                                           brand_price_range_5, brand_price_range_10,
+                                           brand_price_range_20, brand_price_range_20plus)
 
 if __name__ == "__main__":
 #Price Charts
@@ -22,5 +24,10 @@ if __name__ == "__main__":
 #Discount Analysis
     #discount_distribution()
     #direct_discount()
-    bulk_min_qty_discount()
+    #bulk_min_qty_discount()
+    #buy_get_free_discount()
+    #brand_price_range_5()
+    #brand_price_range_10()
+    #brand_price_range_20()
+    brand_price_range_20plus()
 
