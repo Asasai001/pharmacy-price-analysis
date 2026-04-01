@@ -38,4 +38,12 @@ def category_range():
     plt.title('Price Range Distribution per Pharmacy')
     plt.show()
 
+def price_heatmap():
+    df = avg_cat_pharm()
+
+    plt.figure(figsize=(18,8))
+    pivot = df.pivot(index='Categories', columns='Pharmacy', values='Average Price')
+    sns.heatmap(pivot, annot=True, fmt='.2f', cmap='RdYlGn_r', center=pivot.mean().mean())
+    plt.title('Average Price Heatmap')
+    plt.show()
 

@@ -23,6 +23,7 @@ def bulk_min_qty():
 	    source AS 'Pharmacy Name',
 	    ROUND(AVG(old_price - final_price_equivalent), 2) AS 'Average Discount',
         ROUND(AVG(old_price), 2) AS 'Average Price Without Discount',
+        ROUND(AVG(final_price_equivalent), 2) AS 'Final Price With Discount',
         mapped_categories AS 'Item Category',
         discount_model AS 'Discount Model'
     FROM
@@ -43,6 +44,7 @@ def direct_percent():
 	    source AS 'Pharmacy Name',
 	    ROUND(AVG(old_price - final_price_equivalent), 2) AS 'Average Discount',
         ROUND(AVG(old_price), 2) AS 'Average Price Without Discount',
+        ROUND(AVG(final_price_equivalent), 2) AS 'Final Price With Discount',
         mapped_categories AS 'Item Category',
         discount_model AS 'Discount Model'
     FROM
@@ -63,6 +65,7 @@ def buy_x_get_y():
     	    source AS 'Pharmacy Name',
     	    ROUND(AVG(old_price - final_price_equivalent), 2) AS 'Average Discount',
             ROUND(AVG(old_price), 2) AS 'Average Price Without Discount',
+            ROUND(AVG(final_price_equivalent), 2) AS 'Final Price With Discount',
             mapped_categories AS 'Item Category',
             discount_model AS 'Discount Model'
         FROM

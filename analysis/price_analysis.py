@@ -16,7 +16,7 @@ def avg_price_cat():
     GROUP BY
 	    mapped_categories
     ORDER BY
-	    mapped_categories, source;
+	    mapped_categories;
     """
     return load_query(query)
 
