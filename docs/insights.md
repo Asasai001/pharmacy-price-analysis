@@ -12,13 +12,15 @@ Mano vaistinė - 4 163
 
 Matoma, kad Camelia turėjo didžiausią akcijinių prekių pasiūlą prieš valymą, tačiau po duomenų filtravimo jos dalis reikšmingai sumažėjo. Taip įvyko dėl didelio dublikatų kiekio.
 
-![Pharmacy market share](../visualization%20charts/pharmacy%20comparison/pharmacy_market_share.png)
+![pharmacy_market_share.png](..%2Fvisualization%20charts%2Fpharmacy%20comparison%2Fpharmacy_market_share.png)
 
 Prekės buvo paskirstytos į kategorijas ir sub-kategrijos. Pastarųjų iš viso buvo 198, todėl siekiant normalizuoti duomenis buvo atliktas kategorijų mappinimas, po kurio sub-kategorijos buvo sutrauktos į 9 bendrų kategorijų.
 
 ![category_mapping.png](..%2Fvisualization%20charts%2Fpharmacy%20comparison%2Fcategory_mapping.png)
 
 Normalizavus kategorijas ir palyginus vidutines prekių kainas per kategorijas galime pamatyti, kad:
+
+![compare_pharmacies_prices.png](..%2Fvisualization%20charts%2Fprice%20charts%2Fcompare_pharmacies_prices.png)
 
 Camelia vaistinė siūlo pigiausias prekes 3-ose kategorijose:
 Higiena ir asmens priežiūra, kosmetika ir grožio priežiūra, medicinos priemonės ir įranga
