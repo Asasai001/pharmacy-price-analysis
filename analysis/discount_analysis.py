@@ -79,13 +79,19 @@ def buy_x_get_y():
     	"""
     return load_query(query)
 
-
-#def run_discount_analysis():
-#    model = discount_model_pharmacy()
-#    min_qty = bulk_min_qty()
-#    direct = direct_percent()
-#    buy_get = buy_x_get_y()
-#    return model, min_qty, direct, buy_get
+def total_number_distribution():
+    query = """
+    SELECT
+	COUNT(*) AS 'Total Number of Items',
+    source AS 'Pharmacy'
+FROM 
+	pharmacy_prices_clean.pharmacy_prices_clean
+GROUP BY
+	source
+ORDER BY
+	source;
+	"""
+    return load_query(query)
 
 
 

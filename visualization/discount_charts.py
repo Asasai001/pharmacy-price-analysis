@@ -6,6 +6,7 @@ from analysis.discount_analysis import (discount_model_pharmacy, direct_percent,
                                         bulk_min_qty, buy_x_get_y)
 
 from analysis.brand_analysis import brand_avg_pharm
+from analysis.load_data import load_query
 
 
 def discount_distribution():
