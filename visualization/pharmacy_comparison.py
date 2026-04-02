@@ -11,6 +11,7 @@ def total_number():
     pivot_total.plot(kind='bar', figsize=(12, 8))
     plt.title('Total Items per Category by Pharmacy')
     plt.xticks(rotation=10)
+    plt.savefig('total_number.png')
     plt.show()
 
 def pharmacy_market_share():
@@ -29,6 +30,7 @@ def pharmacy_market_share():
     plt.title('Pharmacy Market Share')
     plt.axis('equal')
     plt.tight_layout()
+    plt.savefig('pharmacy_market_share.png')
     plt.show()
 
 

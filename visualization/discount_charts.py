@@ -16,6 +16,7 @@ def discount_distribution():
     pivot.plot(kind='bar', figsize=(12, 8))
     plt.title('Discount Models in Pharmacies')
     plt.xticks(rotation=10, fontsize=8, ha='right')
+    plt.savefig('discount_distribution.png')
     plt.show()
 
 def direct_discount():
@@ -25,6 +26,7 @@ def direct_discount():
     pivot.plot(kind='bar', figsize=(12, 9))
     plt.title('Direct Discount Models Distribution in Pharmacies')
     plt.xticks(rotation=10, fontsize=10, ha='right')
+    plt.savefig('direct_discount.png')
     plt.show()
 
 def bulk_min_qty_discount():
@@ -34,6 +36,7 @@ def bulk_min_qty_discount():
     pivot.plot(kind='bar', figsize=(12, 9))
     plt.title('Buy Min Required Qantity Models Distribution in Pharmacies')
     plt.xticks(rotation=10, fontsize=10, ha='right')
+    plt.savefig('bulk_min_qty_discount.png')
     plt.show()
 
 def buy_get_free_discount():
@@ -43,6 +46,7 @@ def buy_get_free_discount():
     pivot.plot(kind='bar', figsize=(12, 9))
     plt.title('Buy Get Free Models Distribution in Pharmacies')
     plt.xticks(rotation=10, fontsize=10, ha='right')
+    plt.savefig('buy_get_free_discount.png')
     plt.show()
 
 def brand_price_range_5():
@@ -64,6 +68,7 @@ def brand_price_range_5():
     plt.figure(figsize=(12, 10))
     sns.heatmap(pivot, annot=True, fmt='.2f', cmap='RdYlGn_r', center=pivot.mean().mean())
     plt.title('Average Price by Brand < 5 eur')
+    plt.savefig('brand_price_range_5.png')
     plt.show()
 
 def brand_price_range_10():
@@ -86,6 +91,7 @@ def brand_price_range_10():
     plt.figure(figsize=(12, 10))
     sns.heatmap(pivot, annot=True, fmt='.2f', cmap='RdYlGn_r', center=pivot.mean().mean())
     plt.title('Average Price by Brand Between 5-10 eur')
+    plt.savefig('brand_price_range_10.png')
     plt.show()
 
 def brand_price_range_20():
@@ -108,6 +114,7 @@ def brand_price_range_20():
     plt.figure(figsize=(12, 10))
     sns.heatmap(pivot, annot=True, fmt='.2f', cmap='RdYlGn_r', center=pivot.mean().mean())
     plt.title('Average Price by Brand Between 10-20 eur')
+    plt.savefig('brand_price_range_20.png')
     plt.show()
 
 def brand_price_range_20plus():
@@ -129,6 +136,7 @@ def brand_price_range_20plus():
     plt.figure(figsize=(12, 10))
     sns.heatmap(pivot, annot=True, fmt='.2f', cmap='RdYlGn_r', vmin=20, vmax=100)
     plt.title('Average Price by Brand > 20 eur')
+    plt.savefig('brand_price_range_20plus.png')
     plt.show()
 
 

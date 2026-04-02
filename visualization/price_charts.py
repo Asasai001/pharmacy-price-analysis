@@ -12,6 +12,7 @@ def compare_pharmacies_prices():
     pivot.plot(kind="bar", figsize=(12,8))
     plt.title("Pharmacy Price Comparison")
     plt.xticks(rotation=10, fontsize=8, ha='right')
+    plt.savefig('compare_pharmacies_prices.png')
     plt.show()
 
 def price_range():
@@ -23,6 +24,7 @@ def price_range():
 
     sns.barplot(data=df_long, x='Pharmacy', y='Total Number', hue='Price Range', palette='viridis')
     plt.title('Price Range Distribution per Pharmacy')
+    plt.savefig('price_range.png')
     plt.show()
 
 def category_range():
@@ -36,6 +38,7 @@ def category_range():
     sns.barplot(data=df_long, x='Category', y='Total Number', hue='Price Range', palette='viridis')
     plt.xticks(rotation=10, ha='right')
     plt.title('Price Range Distribution per Pharmacy')
+    plt.savefig('category_range.png')
     plt.show()
 
 def price_heatmap():
@@ -45,5 +48,6 @@ def price_heatmap():
     pivot = df.pivot(index='Categories', columns='Pharmacy', values='Average Price')
     sns.heatmap(pivot, annot=True, fmt='.2f', cmap='RdYlGn_r', center=pivot.mean().mean())
     plt.title('Average Price Heatmap')
+    plt.savefig('price_heatmap.png')
     plt.show()
 

@@ -17,10 +17,9 @@ if __name__ == "__main__":
     #category_range()
     #price_heatmap()
 
-#Pharmacy comparision
+#Pharmacy comparison
     #total_number()
     #pharmacy_market_share()
-
 
 #Discount Analysis
     #discount_distribution()
@@ -30,5 +29,5 @@ if __name__ == "__main__":
     #brand_price_range_5()
     #brand_price_range_10()
     #brand_price_range_20()
-    #brand_price_range_20plus()
+    brand_price_range_20plus()
 
