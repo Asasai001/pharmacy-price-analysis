@@ -15,16 +15,17 @@
 - **Vizualizacija**: Matplotlib, Seaborn
 
 Scrapy → MySQL (raw duomenys)
-SQL (valymas ir transformacijos)
-Pandas (analizė)
-Vizualizacijos
+→ SQL (valymas ir transformacijos)
+→ Pandas (analizė)
+→ Vizualizacijos
 
 ## Projekto struktūra
 
 pharmacy-price-analysis/
 
 ├── scrapers/ # Scrapy spideriai ir pipeline
-├── database/ # schema.sql, views.sql
+
+├── database/ # schema.sql, views.sq
 ├── analysis/ # SQL užklausos per Python
 ├── visualizations/ # Matplotlib, Seaborn vizualizacijos
 ├── visualizations charts/ # sugeneruoti grafikai
