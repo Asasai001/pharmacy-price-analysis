@@ -23,15 +23,14 @@ Scrapy → MySQL (raw duomenys)
 
 pharmacy-price-analysis/
 
-├── scrapers/ # Scrapy spideriai ir pipeline
-
-├── database/ # schema.sql, views.sq
-├── analysis/ # SQL užklausos per Python
-├── visualizations/ # Matplotlib, Seaborn vizualizacijos
-├── visualizations charts/ # sugeneruoti grafikai
-├── docs/insights.md # analizės išvados
-├── requirements.txt
-└── README.md
+- `scrapers/` - Scrapy spideriai ir pipeline
+- `database/` - schema.sql, views.sql
+- `analysis/` - SQL užklausos per Python
+- `visualizations/` - Matplotlib, Seaborn vizualizacijos
+- `visualizations charts/` - sugeneruoti grafikai
+- `docs/insights.md` - analizės išvados
+- `requirements.txt`
+- `README.md`
 
 ## Duomenų apdorojimas
 
