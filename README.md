@@ -1,31 +1,62 @@
-# Pharmacy Price Comparison Project
+# Vaistinių kainų analizė
 
-## Goal
-Compare medication prices, availability and descriptions
-across Lithuanian pharmacy chains using web scraping,
-SQL analysis and data visualization.
+## Tikslas
+Šio projekto tikslas – išanalizuoti akcijines prekes trijose Lietuvos internetinėse vaistinėse:
 
-## Data Sources
-- Camelia (robots.txt respected)
-- Eurovaistinė
+- Camelia 
 - Gintarinė vaistinė
+- Mano vaistinė
 
-## Tech Stack
-- Scrapy (data collection)
-- MySQL (storage)
-- SQL (analysis)
-- Pandas & Matplotlib (EDA)
-- Power BI (dashboard)
+## Naudotos technologijos
 
-## Architecture
-[diagram]
+- **Web scraping**: Scrapy
+- **Duomenų bazė**: MySQL
+- **Duomenų apdorojimas**: SQL + Pandas
+- **Vizualizacija**: Matplotlib, Seaborn
 
-## Example Insights
-- Price dispersion across pharmacies
-- Availability differences
-- Cheapest pharmacy per category
+Scrapy → MySQL (raw duomenys)
+SQL (valymas ir transformacijos)
+Pandas (analizė)
+Vizualizacijos
 
-## Ethical & Legal Considerations
-- robots.txt respected
-- no login / checkout scraping
-- rate limiting applied
+## Projekto struktūra
+
+pharmacy-price-analysis/
+
+├── scrapers/ # Scrapy spideriai ir pipeline
+├── database/ # schema.sql, views.sql
+├── analysis/ # SQL užklausos per Python
+├── visualizations/ # Matplotlib, Seaborn vizualizacijos
+├── visualizations charts/ # sugeneruoti grafikai
+├── docs/insights.md # analizės išvados
+├── requirements.txt
+└── README.md
+
+## Duomenų apdorojimas
+
+Atliekami šie pagrindiniai veiksmai:
+
+- suvienodinamos kategorijos tarp skirtingų vaistinių
+- išskiriami ir standartizuojami nuolaidų modeliai:
+  - `direct_percent`
+  - `bulk_min_qty`
+  - `buy_x_get_y`
+- apskaičiuojama `final_price_equivalent`
+- pašalinami netinkami arba nepilni duomenys
+
+## Analizės kryptys
+
+- kainų palyginimas tarp vaistinių ir kategorijų
+- nuolaidų tipų pasiskirstymas
+- brandų kainų palyginimas
+- kainų diapazonų analizė
+
+## Pagrindinės įžvalgos
+
+Pilna analizė pateikta `docs/insights.md`
+
+## Pastabos
+
+- pilni scraped duomenys nėra viešinami
+- projektas skirtas edukaciniams ir analitiniams tikslams
+

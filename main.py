@@ -12,22 +12,22 @@ from visualization.discount_charts import (discount_distribution, direct_discoun
 if __name__ == "__main__":
 #Price Charts
 
-    #compare_pharmacies_prices()
-    #price_range()
-    #category_range()
-    #price_heatmap()
+    compare_pharmacies_prices()
+    price_range()
+    category_range()
+    price_heatmap()
 
 #Pharmacy comparison
-    #total_number()
-    #pharmacy_market_share()
+    total_number()
+    pharmacy_market_share()
 
 #Discount Analysis
-    #discount_distribution()
-    #direct_discount()
-    #bulk_min_qty_discount()
-    #buy_get_free_discount()
-    #brand_price_range_5()
-    #brand_price_range_10()
-    #brand_price_range_20()
+    discount_distribution()
+    direct_discount()
+    bulk_min_qty_discount()
+    buy_get_free_discount()
+    brand_price_range_5()
+    brand_price_range_10()
+    brand_price_range_20()
     brand_price_range_20plus()
 
